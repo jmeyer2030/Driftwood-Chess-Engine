@@ -12,22 +12,22 @@ import com.jmeyer2030.driftwood.movegeneration.MoveGenerator;
  *
  * <h3>Stages (not in check)</h3>
  * <ol>
- *   <li>TT_MOVE — yield TT best move (validated with {@link MoveGenerator#isMoveLegal})</li>
- *   <li>GEN_CAPTURES — generate captures into buffer, score with SEE</li>
- *   <li>CAPTURES — selection-sort yield one capture at a time (skip TT move)</li>
- *   <li>KILLER_1 — yield killer[0][ply] if legal, quiet, and not TT move</li>
- *   <li>KILLER_2 — yield killer[1][ply] if legal, quiet, and not TT/killer1</li>
- *   <li>GEN_QUIETS — generate quiets into buffer, score with history</li>
- *   <li>QUIETS — selection-sort yield one quiet at a time (skip TT/killers)</li>
- *   <li>DONE — return 0</li>
+ *   <li>TT_MOVE, yield TT best move (validated with {@link MoveGenerator#isMoveLegal})</li>
+ *   <li>GEN_CAPTURES, generate captures into buffer, score with SEE</li>
+ *   <li>CAPTURES, selection-sort yield one capture at a time (skip TT move)</li>
+ *   <li>KILLER_1, yield killer[0][ply] if legal, quiet, and not TT move</li>
+ *   <li>KILLER_2, yield killer[1][ply] if legal, quiet, and not TT/killer1</li>
+ *   <li>GEN_QUIETS, generate quiets into buffer, score with history</li>
+ *   <li>QUIETS, selection-sort yield one quiet at a time (skip TT/killers)</li>
+ *   <li>DONE, return 0</li>
  * </ol>
  *
  * <h3>Stages (in check)</h3>
  * <ol>
- *   <li>TT_MOVE — same as above</li>
- *   <li>GEN_EVASIONS — generate all evasions, score with full scoring</li>
- *   <li>EVASIONS — selection-sort yield one at a time (skip TT move)</li>
- *   <li>DONE — return 0</li>
+ *   <li>TT_MOVE, same as above</li>
+ *   <li>GEN_EVASIONS, generate all evasions, score with full scoring</li>
+ *   <li>EVASIONS, selection-sort yield one at a time (skip TT move)</li>
+ *   <li>DONE, return 0</li>
  * </ol>
  *
  * <h3>Pin preservation</h3>
@@ -94,7 +94,7 @@ public class MovePicker {
 
     /**
      * Initializes this picker for one search node.
-     * Calls {@link MoveGenerator#computePins} once — pins survive child searches
+     * Calls {@link MoveGenerator#computePins} once, pins survive child searches
      * because {@code Position.makeMove}/{@code unmakeMove} save/restore pinnedBB on a stack.
      */
     public void init(Position position, SearchContext searchContext, SharedTables sharedTables,
@@ -107,7 +107,7 @@ public class MovePicker {
         this.initialFirstNonMove = searchContext.firstNonMove;
         this.moveCount = 0;
 
-        // Compute pins once — survives child searches via Position's pinnedBBStack
+        // Compute pins once, survives child searches via Position's pinnedBBStack
         MoveGenerator.computePins(position);
 
         // Get killer moves for this ply

@@ -57,7 +57,7 @@ public class CommandHandler {
             try {
                 input = scanner.nextLine();
             } catch (NoSuchElementException e) {
-                // stdin was closed (e.g. parent process terminated) — exit gracefully
+                // stdin was closed (e.g. parent process terminated), exit gracefully
                 break;
             }
             String[] parts = input.split("\\s+");

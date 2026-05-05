@@ -1,4 +1,4 @@
-licehss_db_puzzle contains 5.8M puzzles from Lichess.
+lichess_db_puzzle contains 5.8M puzzles from Lichess.
 
 Format:
  - PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl,OpeningTags

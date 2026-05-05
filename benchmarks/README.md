@@ -1,6 +1,6 @@
 # Benchmarks
 
-Standalone benchmark suites for the DriftWood chess engine. These are **not** JUnit tests — they live outside `src/test` and are run independently.
+Standalone benchmark suites. These are **not** JUnit tests, they live outside `src/test` and are run independently.
 
 | Benchmark | Directory | Description |
 |---|---|---|

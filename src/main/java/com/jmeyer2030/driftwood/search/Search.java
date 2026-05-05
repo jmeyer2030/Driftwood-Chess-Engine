@@ -227,7 +227,7 @@ public class Search {
         }
 
         //=============== Check transposition table ===============
-        // Probed before move generation — on a cutoff we skip movegen entirely.
+        // Probed before move generation, on a cutoff we skip movegen entirely.
         int eval = 0;
         boolean foundTTScore = false;
         long ttPacked = (sharedTables.tt != null) ? sharedTables.tt.probe(position.zobristHash, depthLeft) : 0;
@@ -415,7 +415,7 @@ public class Search {
                             searchContext.historyHeuristic.penalizeMove(position.activePlayer, quietsSearched[j], depthLeft);
                         }
                     } else {
-                        // Capture caused beta cutoff — update capture history
+                        // Capture caused beta cutoff, update capture history
                         searchContext.captureHistory.addBonus(position.activePlayer, move, depthLeft);
 
                         for (int j = 0; j < searchContext.numCapturesSearched[ply] - 1; j++) {
@@ -477,10 +477,22 @@ public class Search {
         return true;
     }
 
+    /**
+    * Normalizes score so that it is relative to the Position. During search, scores are MATED_VALUE - depth - ply,
+    * relative to the depth of the node, and the moves until mate.
+    * The TT should score  ONLY care about the moves until mate, and not the ply that we are currently at, so we remove
+    * this consideration.
+    */
     public static int scoreToTT(int score, int ply) {
         return (score > MATED_SCORE) ? score + ply : score < -MATED_SCORE ? score - ply : score;
     }
 
+    /**
+    * TT Score stores as moves from the position to mate. We make it relative to the search here.
+    * </p>
+    * e.g. mate in 3, at a position 4 deep, should be treated as mate in 7, relative to the search
+    * of the root position
+    */
     public static int scoreFromTT(int score, int ply) {
         return (score > MATED_SCORE) ? score - ply : score < -MATED_SCORE ? score + ply : score;
     }

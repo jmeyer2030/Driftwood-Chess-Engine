@@ -5,8 +5,8 @@ import com.jmeyer2030.driftwood.search.TranspositionTable;
 /**
  * Long-lived tables shared across the lifetime of a game. Created once per {@code ucinewgame}.
  * <ul>
- *   <li>{@link TranspositionTable} — may be {@code null} when TT is disabled (e.g. in tests)</li>
- *   <li>{@link ThreeFoldTable} — mutable; replaced on each {@code position} command,
+ *   <li>{@link TranspositionTable}, may be {@code null} when TT is disabled (e.g. in tests)</li>
+ *   <li>{@link ThreeFoldTable}, mutable; replaced on each {@code position} command,
  *       and pushed/popped during search</li>
  * </ul>
  */

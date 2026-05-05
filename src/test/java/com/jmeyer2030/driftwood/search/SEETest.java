@@ -24,7 +24,7 @@ class SEETest {
         // Act
         int result = see.see(move, position);
 
-        // Assert — knight takes undefended queen: net gain = queen value (1000)
+        // Assert, knight takes undefended queen: net gain = queen value (1000)
         assertEquals(SEE.value[4], result);
     }
 
@@ -39,7 +39,7 @@ class SEETest {
         // Act
         int result = see.see(move, position);
 
-        // Assert — nxQ gains queen (1000), then Bxn loses knight (325) → net 1000 - 325 = 675
+        // Assert, nxQ gains queen (1000), then Bxn loses knight (325) → net 1000 - 325 = 675
         assertEquals(SEE.value[4] - SEE.value[1], result);
     }
 
@@ -54,7 +54,7 @@ class SEETest {
         // Act
         int result = see.see(move, position);
 
-        // Assert — nxQ gains queen (1000), Kxn recaptures knight (325) → net 1000 - 325 = 675
+        // Assert, nxQ gains queen (1000), Kxn recaptures knight (325) → net 1000 - 325 = 675
         assertEquals(SEE.value[4] - SEE.value[1], result);
     }
 
@@ -69,7 +69,7 @@ class SEETest {
         // Act
         int result = see.see(move, position);
 
-        // Assert — RxP gains a pawn (100), then RxR loses rook (500), net = 100 - 500 = -400
+        // Assert, RxP gains a pawn (100), then RxR loses rook (500), net = 100 - 500 = -400
         // but black can choose not to recapture, so SEE correctly evaluates the exchange
         assertTrue(result >= -500 && result <= 100,
                 "SEE result " + result + " should be in a reasonable range for RxP with rook behind");
@@ -86,7 +86,7 @@ class SEETest {
         // Act
         int result = see.see(move, position);
 
-        // Assert — complex position; knight captures e5 pawn with multiple attackers/defenders
+        // Assert, complex position; knight captures e5 pawn with multiple attackers/defenders
         // The result should be deterministic and within reasonable bounds
         assertTrue(result >= -500 && result <= 500,
                 "SEE result " + result + " should be within reasonable bounds for complex exchange");

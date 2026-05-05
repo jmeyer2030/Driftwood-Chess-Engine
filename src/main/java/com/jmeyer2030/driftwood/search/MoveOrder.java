@@ -13,7 +13,7 @@ public class MoveOrder {
     // With values 100–1000 this gives base scores 700–7000.
     public static final int MVV_MULTIPLIER = 7;
 
-    // Capture history (±16_384) is divided by this so it acts as a tiebreaker
+    // Capture history (+/- 16_384) is divided by this so it acts as a tiebreaker
     // within MVV-based ordering.  256 → effective range ±64, well under the
     // smallest MVV gap (210 between knight and bishop at ×7).
     public static final int CAPTURE_HISTORY_DIVISOR = 256;
@@ -24,23 +24,6 @@ public class MoveOrder {
     public static final int CAPTURE_BONUS = 50_000;
     public static final int FIRST_KILLER_BONUS = 30_000;
     public static final int SECOND_KILLER_BONUS = 29_000;
-
-
-    /**
-     * Assigns scores to moves in the corresponding searchContext.moveScores
-     *
-     * @param searchContext  source of move tables and heuristics
-     * @param sharedTables   source of TT
-     * @param firstMove      the start of the move-window in the table
-     * @param firstNonMove   the first non-move after the window
-     * @param ply            used for killers
-     */
-    public static void scoreMoves(Position position, SearchContext searchContext, SharedTables sharedTables, int firstMove, int firstNonMove, int ply) {
-        // Iterate over moves in the window
-        for (int i = firstMove; i < firstNonMove; i++) {
-            searchContext.moveScores[i] = scoreMove(position, searchContext, sharedTables, searchContext.moveBuffer[i], ply);
-        }
-    }
 
     /**
      * Scores captures using MVV (Most Valuable Victim) as the primary key and
@@ -121,74 +104,11 @@ public class MoveOrder {
     }
 
     /**
-     * Returns the score of a move. Prioritizing in order:
-     * - PV / hash move
-     * - Promotions
-     * - Captures: MVV + scaled capture history
-     * - KILLER MOVES
-     * - Quiet moves (History Heuristic)
-     *
-     * @param position      used for the hash
-     * @param searchContext  used for pv/History/killers/captureHistory
-     * @param sharedTables   used for the tt
-     * @param move          move to evaluate
-     * @param ply           current ply in the search
-     * @return score of the move
-     */
-    private static int scoreMove(Position position, SearchContext searchContext, SharedTables sharedTables, int move, int ply) {
-        int value = 0;
-
-        if (ply == 0) { // TODO: This is not needed because we have tt?
-            // get pv from triangular pv table
-            int pvMove = searchContext.pvTable.getPVMove();
-
-            if (pvMove == move) {
-                value += PV_BONUS;
-            }
-        }
-
-        if (sharedTables.tt.checkedGetBestMove(position.zobristHash) == move) {
-            value += TT_BONUS;
-        }
-
-        if (MoveEncoding.getIsPromotion(move)) {
-            value += PROMOTION_BONUS;
-        }
-
-        if (MoveEncoding.getIsCapture(move)) {
-            value += CAPTURE_BONUS
-                   + PIECE_VALUES[MoveEncoding.getCapturedPiece(move)] * MVV_MULTIPLIER
-                   + searchContext.captureHistory.getScore(position.activePlayer, move) / CAPTURE_HISTORY_DIVISOR;
-        } else {
-            if (move == searchContext.killerMoves.killerMoves[0][ply]) {
-                value += FIRST_KILLER_BONUS;
-            } else if (move == searchContext.killerMoves.killerMoves[1][ply]) {
-                value += SECOND_KILLER_BONUS;
-            }
-
-            value += searchContext.historyHeuristic.getHeuristic(move, position.activePlayer);
-        }
-
-        return value;
-    }
-
-    /**
-     * Returns the net value of a capture if the capturer is then taken
-     *
-     * @param move
-     * @return exchange evaluation
-     */
-    private static int mvvlva(int move) {
-        return PIECE_VALUES[MoveEncoding.getCapturedPiece(move)] - PIECE_VALUES[MoveEncoding.getMovedPiece(move)];
-    }
-
-
-    /**
      * Scores evasion moves (used by QSearchMovePicker for the in-check path).
      * Captures use MVV + scaled capture history + CAPTURE_BONUS; quiets use history heuristic.
-     * No per-move TT probe — the TT move is handled by a separate stage.
+     * No per-move TT probe, the TT move is handled by a separate stage.
      *
-     * @param position      current position
+     * @param position       current position
      * @param searchContext  source of capture history, quiet history, move buffer/scores
      * @param firstMove      the start of the move-window in the table
      * @param firstNonMove   the first non-move after the window
@@ -210,6 +130,16 @@ public class MoveOrder {
             }
             searchContext.moveScores[i] = score;
         }
+    }
+
+    /**
+     * Returns the net value of a capture if the capturer is then taken
+     *
+     * @param move
+     * @return exchange evaluation
+     */
+    private static int mvvlva(int move) {
+        return PIECE_VALUES[MoveEncoding.getCapturedPiece(move)] - PIECE_VALUES[MoveEncoding.getMovedPiece(move)];
     }
 
     /**

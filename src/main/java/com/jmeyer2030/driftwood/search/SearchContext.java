@@ -25,15 +25,15 @@ public class SearchContext {
     public final TriangularPVTable pvTable;
     public final SEE see;
 
-    // Per-ply pooled objects — avoids per-node heap allocation in the hot search loop
+    // Per-ply pooled objects, avoids per-node heap allocation in the hot search loop
     public final MovePicker[] movePickers;
     public final QSearchMovePicker[] qSearchMovePickers;
 
-    // Per-ply pooled quietsSearched tracking — avoids per-node array allocation in pvSearch
+    // Per-ply pooled quietsSearched tracking, avoids per-node array allocation in pvSearch
     public final int[][] quietsSearched;
     public final int[] numQuietsSearched;
 
-    // Per-ply pooled capturesSearched tracking — for capture history penalization on beta cutoff
+    // Per-ply pooled capturesSearched tracking, for capture history penalization on beta cutoff
     public final int[][] capturesSearched;
     public final int[] numCapturesSearched;
 

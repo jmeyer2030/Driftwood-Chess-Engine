@@ -9,7 +9,7 @@ import com.jmeyer2030.driftwood.board.Position;
 */
 public class MoveShortcuts {
 /*
-    Move templates — built from MoveEncoding flag masks and Piece constants
+    Move templates, built from MoveEncoding flag masks and Piece constants
 */
     public static final int PAWN_EN_PASSANT_TEMPLATE =            MoveEncoding.IS_EP_MASK;
     public static final int PAWN_PROMOTION_NO_CAPTURE_TEMPLATE = MoveEncoding.IS_PROMOTION_MASK;

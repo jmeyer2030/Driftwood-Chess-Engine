@@ -2,12 +2,12 @@
 
 Standalone benchmark that tests DriftWood against puzzles from the
 [Lichess open puzzle database](https://database.lichess.org/#puzzles).
-It is **not** part of the JUnit test suite — it is run separately via a batch script.
+It is **not** part of the JUnit test suite, it is run separately via a batch script.
 
 ## How It Works
 
-1. Streams through the CSV file, filtering by rating range and using **reservoir sampling** to
-   select _N_ puzzles with a seeded RNG (reproducible across runs, constant memory regardless of CSV size).
+1. Streams through the CSV file, filtering by rating range, using **reservoir sampling** to
+   select _N_ puzzles with a seeded RNG (reproducible puzzle selection).
 2. For each puzzle:
    - Parses the FEN and applies the opponent's setup move (first move in the `Moves` field).
    - Runs `Search.iterativeDeepening` with the configured time budget.
@@ -84,8 +84,8 @@ PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl,Open
 ## Notes
 
 - **Reservoir sampling** is used to select puzzles, so only `COUNT` puzzle objects are held in memory at once — the full 5.8M CSV is streamed, not loaded. The CSV scan itself takes a few seconds.
-- Engine search info output (`info depth ...`) is suppressed during the benchmark to keep output clean.
-- Each puzzle gets a fresh `SearchContext` and `SharedTables`, simulating a `ucinewgame` between puzzles.
+- Engine search info output (`info depth ...`) is suppressed.
+- Each puzzle gets a fresh context (e.g. new tt).
 
 
 

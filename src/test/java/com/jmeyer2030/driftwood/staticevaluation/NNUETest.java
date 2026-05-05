@@ -19,7 +19,7 @@ class NNUETest {
         // Act
         int evalWhite = nnue.computeOutput(0);
 
-        // Assert — starting position should be roughly symmetric, eval near zero
+        // Assert, starting position should be roughly symmetric, eval near zero
         assertTrue(Math.abs(evalWhite) < 200,
                 "Starting position eval should be near zero, was: " + evalWhite);
     }
@@ -27,7 +27,7 @@ class NNUETest {
     @Test
     @DisplayName("computeOutput returns opposite-sign values for white vs black perspective in asymmetric position")
     void returnsOppositeSignsForWhiteVsBlackPerspective() {
-        // Arrange — white has an extra queen, heavily favors white
+        // Arrange, white has an extra queen, heavily favors white
         FEN fen = new FEN("4k3/8/8/8/8/8/8/3QK3 w - - 0 1");
         Position position = new Position(fen);
         NNUE nnue = (NNUE) position.evaluator;
@@ -36,7 +36,7 @@ class NNUETest {
         int evalWhite = nnue.computeOutput(0);
         int evalBlack = nnue.computeOutput(1);
 
-        // Assert — white perspective should be positive, black perspective should be negative
+        // Assert, white perspective should be positive, black perspective should be negative
         assertTrue(evalWhite > 0, "White perspective should be positive, was: " + evalWhite);
         assertTrue(evalBlack < 0, "Black perspective should be negative, was: " + evalBlack);
     }
@@ -64,7 +64,7 @@ class NNUETest {
         NNUE nnue = (NNUE) position.evaluator;
         int evalBefore = nnue.computeOutput(0);
 
-        // Act — generate a legal move and make/unmake it
+        // Act, generate a legal move and make/unmake it
         int[] moveBuffer = new int[256];
         int numMoves = com.jmeyer2030.driftwood.movegeneration.MoveGenerator.generateAllMoves(position, moveBuffer, 0);
         assertTrue(numMoves > 0, "Should have legal moves from starting position");
@@ -75,7 +75,7 @@ class NNUETest {
 
         int evalAfter = nnue.computeOutput(0);
 
-        // Assert — eval should be identical after make/unmake round-trip
+        // Assert, eval should be identical after make/unmake round-trip
         assertEquals(evalBefore, evalAfter,
                 "Eval should be identical after make/unmake round-trip");
     }
@@ -88,7 +88,7 @@ class NNUETest {
         NNUE nnue = (NNUE) position.evaluator;
         int evalBefore = nnue.computeOutput(0);
 
-        // Act — make 3 moves deep, then unmake all 3
+        // Act, make 3 moves deep, then unmake all 3
         int[] moveBuffer = new int[256];
         int[] moves = new int[3];
         for (int depth = 0; depth < 3; depth++) {

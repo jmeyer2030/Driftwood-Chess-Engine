@@ -34,19 +34,17 @@ public class KingLogic {
     private static long generateWhiteCastles(Position position) {
         long result = 0L;
         // queen side
-        if (((position.castleRights & PositionConstants.CASTLE_RIGHT_WQ) != 0) &&
-                (((position.pieces[Piece.ROOK] & position.pieceColors[Color.WHITE]) & (1L << PositionConstants.ROOK_START_WQ)) != 0L) &&
-                ((position.occupancy & (1L << PositionConstants.CASTLE_QS_ROOK_CROSS_W)) == 0L) &&
-                ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_WQ)) == 0L) &&
-                ((position.occupancy & (1L << PositionConstants.CASTLE_PASSTHROUGH_WQ)) == 0L) &&
-                ((position.pieceColors[Color.WHITE] & (1L << PositionConstants.ROOK_START_WQ)) != 0L))
+        if (((position.castleRights & PositionConstants.CASTLE_RIGHT_WQ) != 0) && // Has castle rights for that side
+                (((position.pieces[Piece.ROOK] & position.pieceColors[Color.WHITE]) & (1L << PositionConstants.ROOK_START_WQ)) != 0L) && // Rook is in place (TODO: is this not needed because of the above check?)
+                ((position.occupancy & (1L << PositionConstants.CASTLE_QS_ROOK_CROSS_W)) == 0L) && // White knight starting square is empty
+                ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_WQ)) == 0L) && // White bishop starting square is empty
+                ((position.occupancy & (1L << PositionConstants.CASTLE_PASSTHROUGH_WQ)) == 0L)) // White queen starting square is empty
             result |= (1L << PositionConstants.CASTLE_DEST_WQ);
         // king side
         if (((position.castleRights & PositionConstants.CASTLE_RIGHT_WK) != 0) &&
                 (((position.pieces[Piece.ROOK] & position.pieceColors[Color.WHITE]) & (1L << PositionConstants.ROOK_START_WK)) != 0L) &&
                 ((position.occupancy & (1L << PositionConstants.CASTLE_PASSTHROUGH_WK)) == 0L) &&
-                ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_WK)) == 0L) &&
-                ((position.pieceColors[Color.WHITE] & (1L << PositionConstants.ROOK_START_WK)) != 0L))
+                ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_WK)) == 0L))
             result |= (1L << PositionConstants.CASTLE_DEST_WK);
         return result;
     }
@@ -58,15 +56,13 @@ public class KingLogic {
                 (((position.pieces[Piece.ROOK] & position.pieceColors[Color.BLACK]) & (1L << PositionConstants.ROOK_START_BQ)) != 0L) &&
                 ((position.occupancy & (1L << PositionConstants.CASTLE_QS_ROOK_CROSS_B)) == 0L) &&
                 ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_BQ)) == 0L) &&
-                ((position.occupancy & (1L << PositionConstants.CASTLE_PASSTHROUGH_BQ)) == 0L) &&
-                ((position.pieceColors[Color.BLACK] & (1L << PositionConstants.ROOK_START_BQ)) != 0L))
+                ((position.occupancy & (1L << PositionConstants.CASTLE_PASSTHROUGH_BQ)) == 0L))
             result |= (1L << PositionConstants.CASTLE_DEST_BQ);
         // king side
         if (((position.castleRights & PositionConstants.CASTLE_RIGHT_BK) != 0) &&
                 (((position.pieces[Piece.ROOK] & position.pieceColors[Color.BLACK]) & (1L << PositionConstants.ROOK_START_BK)) != 0L) &&
                 ((position.occupancy & (1L << PositionConstants.CASTLE_PASSTHROUGH_BK)) == 0L) &&
-                ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_BK)) == 0L) &&
-                ((position.pieceColors[Color.BLACK] & (1L << PositionConstants.ROOK_START_BK)) != 0L))
+                ((position.occupancy & (1L << PositionConstants.CASTLE_DEST_BK)) == 0L))
             result |= (1L << PositionConstants.CASTLE_DEST_BK);
         return result;
     }

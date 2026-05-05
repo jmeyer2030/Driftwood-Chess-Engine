@@ -10,18 +10,18 @@ import com.jmeyer2030.driftwood.movegeneration.MoveGenerator;
  *
  * <h3>Stages (not in check)</h3>
  * <ol>
- *   <li>TT_MOVE — yield TT best move if it's a legal capture</li>
- *   <li>GEN_CAPTURES — generate captures into buffer, score with SEE</li>
- *   <li>CAPTURES — selection-sort yield one capture at a time (skip TT move)</li>
- *   <li>DONE — return 0</li>
+ *   <li>TT_MOVE, yield TT best move if it's a legal capture</li>
+ *   <li>GEN_CAPTURES, generate captures into buffer, score with SEE</li>
+ *   <li>CAPTURES, selection-sort yield one capture at a time (skip TT move)</li>
+ *   <li>DONE, return 0</li>
  * </ol>
  *
  * <h3>Stages (in check)</h3>
  * <ol>
- *   <li>TT_MOVE — yield TT best move if legal (any move type)</li>
- *   <li>GEN_EVASIONS — generate all evasions, score with {@link MoveOrder#scoreEvasionMoves}</li>
- *   <li>EVASIONS — selection-sort yield one at a time (skip TT move)</li>
- *   <li>DONE — return 0</li>
+ *   <li>TT_MOVE, yield TT best move if legal (any move type)</li>
+ *   <li>GEN_EVASIONS, generate all evasions, score with {@link MoveOrder#scoreEvasionMoves}</li>
+ *   <li>EVASIONS, selection-sort yield one at a time (skip TT move)</li>
+ *   <li>DONE, return 0</li>
  * </ol>
  *
  * <p>{@code position.pinnedBB} is saved/restored on a {@code FixedSizeLongStack} inside
@@ -61,7 +61,7 @@ public class QSearchMovePicker {
 
     /**
      * Initializes this picker for one qsearch node.
-     * Calls {@link MoveGenerator#computePins} once — pins survive child searches
+     * Calls {@link MoveGenerator#computePins} once, pins survive child searches
      * because {@code Position.makeMove}/{@code unmakeMove} save/restore pinnedBB on a stack.
      */
     public void init(Position position, SearchContext searchContext, int ttMove, boolean inCheck) {
@@ -71,7 +71,7 @@ public class QSearchMovePicker {
         this.initialFirstNonMove = searchContext.firstNonMove;
         this.moveCount = 0;
 
-        // Compute pins once — survives child searches via Position's pinnedBBStack
+        // Compute pins once, survives child searches via Position's pinnedBBStack
         MoveGenerator.computePins(position);
 
         this.stage = inCheck ? STAGE_CHECK_TT_MOVE : STAGE_TT_MOVE;

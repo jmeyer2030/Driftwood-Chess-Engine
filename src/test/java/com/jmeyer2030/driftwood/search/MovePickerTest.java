@@ -116,7 +116,7 @@ public class MovePickerTest {
     @Test
     @DisplayName("MovePicker yields no duplicate moves")
     public void testMovePickerNoDuplicates() {
-        // Arrange — complex position with many piece types
+        // Arrange, complex position with many piece types
         FEN fen = new FEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
         Position position = new Position(fen);
         SearchContext searchContext = new SearchContext();
@@ -147,7 +147,7 @@ public class MovePickerTest {
     @Test
     @DisplayName("MovePicker yields captures before quiets when not in check")
     public void testMovePickerCapturesBeforeQuiets() {
-        // Arrange — position with captures available
+        // Arrange, position with captures available
         FEN fen = new FEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
         Position position = new Position(fen);
         SearchContext searchContext = new SearchContext();
@@ -158,7 +158,7 @@ public class MovePickerTest {
         List<Integer> pickedMoves = drainPicker(picker);
         picker.restoreBuffer();
 
-        // Assert — find the last capture and first quiet, verify ordering
+        // Assert, find the last capture and first quiet, verify ordering
         int lastCaptureIndex = -1;
         int firstQuietIndex = -1;
         for (int i = 0; i < pickedMoves.size(); i++) {
@@ -183,7 +183,7 @@ public class MovePickerTest {
     @Test
     @DisplayName("MovePicker yields no moves in checkmate position")
     public void testMovePickerCheckmate() {
-        // Arrange — back-rank mate (Black is mated)
+        // Arrange, back-rank mate (Black is mated)
         FEN fen = new FEN("6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1");
         Position position = new Position(fen);
         SearchContext searchContext = new SearchContext();

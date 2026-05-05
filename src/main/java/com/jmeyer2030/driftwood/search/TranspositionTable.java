@@ -27,7 +27,7 @@ package com.jmeyer2030.driftwood.search;
  * <h3>Replacement policy</h3>
  * <p>On store, the incoming entry is placed by priority:</p>
  * <ol>
- *   <li>Overwrite the slot whose hash matches (same position — always refresh)</li>
+ *   <li>Overwrite the slot whose hash matches (same position, always refresh)</li>
  *   <li>Use an empty slot</li>
  *   <li>Asymmetric eviction: slot 0 is <b>depth-preferred</b> (only overwritten when the
  *       incoming depth ≥ the existing depth, with stale entries penalised by
@@ -164,7 +164,7 @@ public class TranspositionTable {
 
     /**
      * Returns the best move for the given position, or 0 on miss.
-     * Checks both bucket slots. Does NOT require a depth check — useful for move ordering.
+     * Checks both bucket slots. Does NOT require a depth check, useful for move ordering.
      */
     public int checkedGetBestMove(long zobristHash) {
         int index = getIndex(zobristHash);
@@ -183,7 +183,7 @@ public class TranspositionTable {
     /**
      * Stores an entry using the two-entry bucket replacement policy with aging.
      * <ol>
-     *   <li>If either slot's hash matches, overwrite it (same position — always refresh).</li>
+     *   <li>If either slot's hash matches, overwrite it (same position, always refresh).</li>
      *   <li>If either slot is empty, use it.</li>
      *   <li>Asymmetric eviction: slot 0 is depth-preferred (overwritten only when the incoming
      *       depth ≥ the existing depth, with stale entries penalised by {@code AGE_BONUS});

@@ -128,7 +128,7 @@ public class BishopLogic {
     }
 
     /*
-     * Private methods primarity for generating move boards or indexing
+     * Private methods primarily for generating move boards or indexing
      */
 
     /**
@@ -295,7 +295,7 @@ public class BishopLogic {
 
 
     /**
-     * generates all potential locations of blockers for each square
+     * Generates all potential locations of blockers for each square
      */
     private static void generateBlockerMasks() {
         for (int i = 0; i < 64; i++) {

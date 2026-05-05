@@ -55,8 +55,9 @@ public class RookLogic {
         populateMoveBoards();
     }
 
+    // TODO: Is this needed? can we just use get attack board?
     /**
-     * Returns a move main.java.board given a square and position
+     * Returns a move board given a square and position
      *
      * @param square   square
      * @param position position

@@ -10,6 +10,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+* Tests that the mate search is effective, and returns scores that correctly indicate the distance to mate.
+* </p>
+* Note that this is currently non-deterministic because we terminate the search early if we get the same mating score
+* three times in a row. Thus, searches that experimentally have inaccurate scores (or take too long), have been omitted.
+*/
 public class MateSearchTest {
 
     /**

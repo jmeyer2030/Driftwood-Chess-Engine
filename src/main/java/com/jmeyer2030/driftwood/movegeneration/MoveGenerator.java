@@ -820,7 +820,7 @@ public class MoveGenerator {
     /**
      * A pinned piece is a piece that is movement restricted because it is intercepting an attack that would otherwise
      * hit the active player's king.
-     * Sets position.pinnedBB — a bitboard with bits set for each pinned piece.
+     * Sets position.pinnedBB, a bitboard with bits set for each pinned piece.
      *
      * @param position position to compute pins on
      */

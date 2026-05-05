@@ -19,7 +19,7 @@ import java.nio.ByteOrder;
  *   <li>{@link #pushAccumulator()} copies the current ply's accumulators to the next ply (called at start of makeMove)</li>
  *   <li>{@link #addFeature}/{@link #removeFeature} eagerly apply weight deltas to the current ply's accumulators</li>
  *   <li>{@link #popAccumulator()} restores the parent ply's accumulators instantly (called at end of unmakeMove)</li>
- *   <li>{@link #computeOutput} reads from the current ply's accumulators — no deferred processing</li>
+ *   <li>{@link #computeOutput} reads from the current ply's accumulators, no deferred processing</li>
  * </ul>
  * This eliminates redundant undo+redo work that the previous lazy-batching approach performed.</p>
  */
@@ -83,7 +83,7 @@ public class NNUE implements Evaluator {
 
     /**
      * Restores the parent ply's accumulator by decrementing the ply pointer.
-     * Called at the end of unmakeMove — no accumulator work needed.
+     * Called at the end of unmakeMove, no accumulator work needed.
      */
     @Override
     public void popAccumulator() {
@@ -105,7 +105,7 @@ public class NNUE implements Evaluator {
         int whitePerspectiveIndex = 64 * whitePerspectiveVal + square;
         int blackPerspectiveIndex = 64 * blackPerspectiveVal + (square ^ 0b111000);
 
-        // Apply directly to current ply's accumulators — separate loops for JVM auto-vectorization
+        // Apply directly to current ply's accumulators, separate loops for JVM auto-vectorization
         int whiteBase = whitePerspectiveIndex * HIDDEN_LAYER_SIZE;
         int[] whiteAcc = whiteAccumulatorStack[accumulatorPly];
         for (int j = 0; j < HIDDEN_LAYER_SIZE; j++) {
@@ -135,7 +135,7 @@ public class NNUE implements Evaluator {
         int whitePerspectiveIndex = 64 * whitePieceVal + square;
         int blackPerspectiveIndex = 64 * blackPieceVal + (square ^ 0b111000);
 
-        // Apply directly to current ply's accumulators — separate loops for JVM auto-vectorization
+        // Apply directly to current ply's accumulators, separate loops for JVM auto-vectorization
         int whiteBase = whitePerspectiveIndex * HIDDEN_LAYER_SIZE;
         int[] whiteAcc = whiteAccumulatorStack[accumulatorPly];
         for (int j = 0; j < HIDDEN_LAYER_SIZE; j++) {
@@ -184,7 +184,7 @@ public class NNUE implements Evaluator {
 
     /**
      * Computes the output from the current ply's accumulators.
-     * No deferred processing needed — accumulators are always up-to-date.
+     * No deferred processing needed, accumulators are always up-to-date.
      */
     public int computeOutput(int activePlayer) {
         if (evaluationIsCurrent && activePlayer == precomputeActivePlayer) {
@@ -267,7 +267,7 @@ public class NNUE implements Evaluator {
         int[] outputWeights = new int[HIDDEN_LAYER_SIZE * 2];
         int outputBias;
 
-        // Get feature weights — stored flat as [inputFeature * HIDDEN_LAYER_SIZE + hiddenNeuron]
+        // Get feature weights, stored flat as [inputFeature * HIDDEN_LAYER_SIZE + hiddenNeuron]
         for (int i = 0; i < INPUT_SIZE * HIDDEN_LAYER_SIZE; i++) {
             hiddenWeights[i] = nnShorts[i];
         }

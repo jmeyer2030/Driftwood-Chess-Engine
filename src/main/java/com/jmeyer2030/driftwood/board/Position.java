@@ -568,7 +568,7 @@ public final class Position {
             zobristHash ^= Hashing.EN_PASSANT[enPassant % 8];
         }
 
-        // Board-only piece manipulation — accumulator restored by popAccumulator below
+        // Board-only piece manipulation, accumulator restored by popAccumulator below
         if (isPromotion) {
             removePieceBoardOnly(destination, promotionType, activePlayer);
         } else {
@@ -615,7 +615,7 @@ public final class Position {
             zobristHash ^= Hashing.EN_PASSANT[enPassant % 8];
         }
 
-        // Restore parent ply's accumulator — no undo work needed
+        // Restore parent ply's accumulator, no undo work needed
         evaluator.popAccumulator();
     }
 
