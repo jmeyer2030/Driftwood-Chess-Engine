@@ -176,4 +176,5 @@ position startpos moves e2e4 e7e5 g1f3 g8f3 b1c3
 
 # Strength
 
-- ~2400 CCRL blitz based on a large number of games played against a 2400 CCRL chess engine
+- Performed at a 2965 CCRL blitz strength in a 1152 game gauntlet against 8 CCRL Rated engines in the 2849-3198 range.
+- More details here: [Elo Estimate](EloEstimate.md)

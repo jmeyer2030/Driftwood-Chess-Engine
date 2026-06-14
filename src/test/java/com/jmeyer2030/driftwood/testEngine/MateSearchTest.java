@@ -131,7 +131,7 @@ public class MateSearchTest {
     @Test
     public void testMatingPosition7() {
         SearchContext searchContext = new SearchContext();
-        SharedTables sharedTables = new SharedTables(18);
+        SharedTables sharedTables = new SharedTables(23);
         FEN fen = new FEN("8/8/7k/K7/R7/8/8/8 w - - 0 1");
         Position position = new Position(fen);
 
@@ -169,7 +169,7 @@ public class MateSearchTest {
     // @Test
     public void testMatingPosition9() {
         SearchContext searchContext = new SearchContext();
-        SharedTables sharedTables = new SharedTables(18);
+        SharedTables sharedTables = new SharedTables(23);
         FEN fen = new FEN("4k3/8/8/3BB3/4K3/8/8/8 w - - 0 1");
         Position position = new Position(fen);
 

@@ -162,7 +162,7 @@ public class MoveGenerator {
         long knightAttacks = KnightLogic.getAttackBoard(square, position) & position.pieces[1];
         long bishopAttacks = BishopLogic.getAttackBoard(square, position.occupancy) & (position.pieces[2] | position.pieces[4]);
         long rookAttacks = RookLogic.getAttackBoard(square, position.occupancy) & (position.pieces[3] | position.pieces[4]);
-        long kingAttacks = KingLogic.getKingAttacks(square);
+        long kingAttacks = KingLogic.getKingAttacks(square) & position.pieces[5];
 
         return pawnAttacks | knightAttacks | bishopAttacks | rookAttacks | kingAttacks;
     }
