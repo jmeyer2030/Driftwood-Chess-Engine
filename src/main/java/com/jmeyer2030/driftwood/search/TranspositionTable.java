@@ -1,10 +1,9 @@
 package com.jmeyer2030.driftwood.search;
 
 /**
- * Transposition table using two {@code long[]} arrays for cache-friendly,
- * lockless-safe storage. Uses a <b>two-entry bucket</b> scheme: each logical
- * slot holds a pair of entries stored at adjacent array indices for good
- * cache-line utilisation.
+ * Transposition table using two {@code long[]} arrays for storage.
+ * Uses a <b>two-entry bucket</b> scheme: each logical
+ * slot holds a pair of entries stored at adjacent array indices.
  *
  * <h3>Encoding</h3>
  * <pre>
@@ -30,7 +29,7 @@ package com.jmeyer2030.driftwood.search;
  *   <li>Overwrite the slot whose hash matches (same position, always refresh)</li>
  *   <li>Use an empty slot</li>
  *   <li>Asymmetric eviction: slot 0 is <b>depth-preferred</b> (only overwritten when the
- *       incoming depth ≥ the existing depth, with stale entries penalised by
+ *       incoming depth >= the existing depth, with stale entries penalised by
  *       {@code AGE_BONUS}); slot 1 is <b>always-replace</b> (unconditionally overwritten
  *       when slot 0 rejects the entry).</li>
  * </ol>
@@ -51,6 +50,12 @@ public class TranspositionTable {
     private static final int MIN_INDEX_BITS = 1;
     private static final int MAX_INDEX_BITS = 29;
 
+    // -- MegaByte Size Constants --
+    private static final int BYTES_PER_ENTRY = 16;
+    private static final int BYTES_PER_MB = 1_048_576;
+    public static final int MIN_MB_SIZE = 1;
+    public static final int MAX_MB_SIZE = (int) (((long) BYTES_PER_ENTRY * (1L << (MAX_INDEX_BITS + 1))) / BYTES_PER_MB);
+
     // -- Aging --
     /**
      * Bonus added to an entry's depth when computing its keep score, if the
@@ -67,7 +72,7 @@ public class TranspositionTable {
     private byte currentGeneration;
 
     /**
-     * Initialises a new transposition table.
+     * Initializes a new transposition table.
      *
      * @param numBits number of bucket-index bits.
      *                Table has 2^numBits buckets × 2 entries = 2^(numBits+1) entries × 16 bytes.
@@ -83,6 +88,25 @@ public class TranspositionTable {
         this.data = new long[size];
         this.generations = new byte[size];
         this.currentGeneration = 0;
+    }
+
+    /**
+    * Factory method to construct a transposition table by size in mb.
+    * <p>
+    * We assume that the size of an entry is 16 bytes (2 longs). This is technically a slight
+    * underestimate, since the size of an entry is 17 bytes. One would expect a power of 2 mb
+    * to construct a table with a power of 2 number of entries for optimal hashing, and the difference
+    * is small, so we make this estimate.
+    */
+    public static TranspositionTable constructByMBSize(int mb) {
+        if (mb < MIN_MB_SIZE || mb > MAX_MB_SIZE) {
+            throw new IllegalArgumentException("mb must be between " + MIN_MB_SIZE + " and " + MAX_MB_SIZE);
+        }
+        long totalBytes = (long) BYTES_PER_MB * mb;
+        long numEntries = totalBytes / BYTES_PER_ENTRY;
+        int numBits = 63 - Long.numberOfLeadingZeros(numEntries) - 1; // Two entries per bucket.
+
+        return new TranspositionTable(numBits);
     }
 
     /**
@@ -186,7 +210,7 @@ public class TranspositionTable {
      *   <li>If either slot's hash matches, overwrite it (same position, always refresh).</li>
      *   <li>If either slot is empty, use it.</li>
      *   <li>Asymmetric eviction: slot 0 is depth-preferred (overwritten only when the incoming
-     *       depth ≥ the existing depth, with stale entries penalised by {@code AGE_BONUS});
+     *       depth >= the existing depth, with stale entries penalized by {@code AGE_BONUS});
      *       slot 1 is always-replace.</li>
      * </ol>
      */
@@ -197,7 +221,7 @@ public class TranspositionTable {
         long packed0 = data[index];
         long packed1 = data[index + 1];
 
-        // 1. Same-position match → always overwrite (keeps data fresh)
+        // 1. Same-position match: always overwrite
         if ((keys[index] ^ packed0) == zobristHash) {
             writeSlot(index, zobristHash, packed);
             return;
@@ -218,12 +242,12 @@ public class TranspositionTable {
         }
 
         // 3. Asymmetric eviction.
-        //    Slot 0 = depth-preferred: only overwritten when new depth ≥ existing depth
-        //    (stale entries are penalised by AGE_BONUS, making them easier to displace).
+        //    Slot 0 = depth-preferred: only overwritten when new depth >= existing depth
+        //    (stale entries are penalized by AGE_BONUS, making them easier to displace).
         //    Slot 1 = always-replace: unconditionally overwritten when slot 0 rejects.
         int existingDepth0 = unpackDepth(packed0);
         if (generations[index] != currentGeneration) {
-            existingDepth0 -= AGE_BONUS; // stale entries are easier to beat
+            existingDepth0 -= AGE_BONUS; // stale entries are much easier to replace
         }
         if (depth >= existingDepth0) {
             writeSlot(index, zobristHash, packed);

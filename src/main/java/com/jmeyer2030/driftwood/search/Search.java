@@ -171,7 +171,7 @@ public class Search {
      */
     public static void iterativeDeepeningFixedDepth(Position position, int depth) {
         SearchContext searchContext = new SearchContext();
-        SharedTables sharedTables = new SharedTables(18);
+        SharedTables sharedTables = new SharedTables(32);
 
         // Advance the TT generation so entries from the previous search become stale
         if (sharedTables.tt != null) {

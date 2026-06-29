@@ -166,6 +166,7 @@ position startpos moves e2e4 e7e5 g1f3 g8f3 b1c3
 ## UCI Commands
 
 - uci
+- setoption (Only Hash is supported, default 256MB)
 - ucinewgame
 - position (startpos, fen, moves)
 - go wtime ... btime ...

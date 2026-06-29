@@ -65,6 +65,32 @@ class TranspositionTableTest {
         assertNotNull(tt);
     }
 
+    // -- constructByMBSize tests --
+
+    @Test
+    @DisplayName("constructByMBSize creates expected index range when given one megabyte")
+    void constructByMBSizeCreatesExpectedIndexRange_whenGivenOneMegabyte() {
+        // Arrange
+        int mb = 1;
+        long highestBucketHash = (1L << 15) - 1;
+
+        // Act
+        TranspositionTable tt = TranspositionTable.constructByMBSize(mb);
+
+        // Assert
+        assertEquals(65534, tt.getIndex(highestBucketHash));
+    }
+
+    @Test
+    @DisplayName("constructByMBSize throws IllegalArgumentException when megabytes exceeds max index bits")
+    void constructByMBSizeThrows_whenMegabytesExceedsMaxIndexBits() {
+        // Arrange
+        int mb = 16_385;
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> TranspositionTable.constructByMBSize(mb));
+    }
+
     // -- getIndex tests --
 
     @Test

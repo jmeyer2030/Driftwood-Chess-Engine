@@ -16,7 +16,7 @@ public class UCINewGame implements Command {
     @Override
     public void execute(String[] arguments) {
         chessEngine.position = new Position();
-        chessEngine.sharedTables = new SharedTables(chessEngine.ttSize);
+        chessEngine.sharedTables = new SharedTables(chessEngine.hashSizeMb);
         chessEngine.searchContext = new SearchContext();
         if (chessEngine.debugActive) {
             System.err.println("info string New game created successfully");

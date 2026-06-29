@@ -103,7 +103,7 @@ class NNUETest {
 
         int evalAfter = nnue.computeOutput(0);
 
-        // Assert — eval should be identical after full round-trip
+        // Assert eval should be identical after full round-trip
         assertEquals(evalBefore, evalAfter,
                 "Eval should be identical after 3-ply make/unmake round-trip");
     }
@@ -116,7 +116,7 @@ class NNUETest {
         NNUE nnue = (NNUE) position.evaluator;
         int evalBefore = nnue.computeOutput(0);
 
-        // Act — make move A, evaluate, unmake; then make move B, evaluate, unmake
+        // Act: make move A, evaluate, unmake; then make move B, evaluate, unmake
         int[] moveBuffer = new int[256];
         int numMoves = com.jmeyer2030.driftwood.movegeneration.MoveGenerator.generateAllMoves(position, moveBuffer, 0);
         assertTrue(numMoves >= 2, "Need at least 2 legal moves");
@@ -136,7 +136,7 @@ class NNUETest {
 
         int evalAfter = nnue.computeOutput(0);
 
-        // Assert — parent eval should be preserved after both sibling explorations
+        // Assert: parent eval should be preserved after both sibling explorations
         assertEquals(evalBefore, evalAfter,
                 "Parent eval should be identical after exploring two sibling moves");
         // Sibling evals should differ (different moves produce different positions)

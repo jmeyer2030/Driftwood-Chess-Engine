@@ -14,13 +14,17 @@ public class SharedTables {
     public final TranspositionTable tt;
     public ThreeFoldTable threeFoldTable;
 
-    public SharedTables(int numBits) {
-        if (numBits == 0) {
+    public SharedTables(int mbHashSize) {
+        this(mbHashSize, new ThreeFoldTable());
+    }
+
+    public SharedTables(int mbHashSize, ThreeFoldTable threeFoldTable) {
+        if (mbHashSize == 0) {
             this.tt = null;
         } else {
-            this.tt = new TranspositionTable(numBits);
+            this.tt = TranspositionTable.constructByMBSize(mbHashSize);
         }
-        this.threeFoldTable = new ThreeFoldTable();
+        this.threeFoldTable = threeFoldTable;
     }
 
     /**

@@ -16,7 +16,7 @@ public class ChessEngine {
 
     // Engine Settings:
     public boolean debugActive;
-    public int ttSize = 18;
+    public int hashSizeMb = 256;
 
     // Engine state
     public boolean isReady = true; // if ready to search or add a position, this should be true.
@@ -47,10 +47,9 @@ public class ChessEngine {
     }
 
     /**
-    * Returns main.java.engine information
+    * Returns chess engine information
     */
     public String getID() {
         return "id name " + ENGINE_NAME + "\nid author " + AUTHOR + "\n";
     }
-
 }
