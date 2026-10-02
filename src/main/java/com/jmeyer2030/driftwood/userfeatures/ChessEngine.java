@@ -26,7 +26,14 @@ public class ChessEngine {
     public SharedTables sharedTables;
     public SearchContext searchContext;
 
+    public final UciOutput uciOutput;
+
     public ChessEngine() {
+        this(new UciOutput(System.out));
+    }
+
+    public ChessEngine(UciOutput uciOutput) {
+        this.uciOutput = java.util.Objects.requireNonNull(uciOutput);
     }
 
     /**

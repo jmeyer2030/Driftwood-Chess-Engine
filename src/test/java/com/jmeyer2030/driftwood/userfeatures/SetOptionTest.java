@@ -19,20 +19,11 @@ class SetOptionTest {
     @DisplayName("UCI mode prints Hash option when uci command is executed")
     void uciModePrintsHashOption_whenUciCommandExecuted() {
         // Arrange
-        ChessEngine chessEngine = new ChessEngine();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ChessEngine chessEngine = new ChessEngine(new UciOutput(new PrintStream(output)));
         CommandHandler commandHandler = new CommandHandler(chessEngine);
         UCIMode uciMode = new UCIMode(chessEngine, commandHandler);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        PrintStream originalOut = System.out;
-
-        try {
-            System.setOut(new PrintStream(output));
-
-            // Act
-            uciMode.execute(new String[0]);
-        } finally {
-            System.setOut(originalOut);
-        }
+        uciMode.execute(new String[0]);
 
         // Assert
         String expectedHashOption = "option name Hash type spin default "

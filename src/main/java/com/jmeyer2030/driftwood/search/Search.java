@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import com.jmeyer2030.driftwood.board.MoveEncoding;
 import com.jmeyer2030.driftwood.board.Position;
 import com.jmeyer2030.driftwood.board.SharedTables;
-import com.jmeyer2030.driftwood.board.InvalidPositionException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,6 +57,14 @@ public class Search {
      * @return moveValue associated with the deepest search of the position
      */
     public static MoveValue iterativeDeepening(Position position, long limitMillis, SearchContext searchContext, SharedTables sharedTables) {
+        return iterativeDeepening(position, limitMillis, searchContext, sharedTables, SearchListener.NONE);
+    }
+
+    /** Reports each completed iteration before starting the next depth. */
+    public static MoveValue iterativeDeepening(Position position, long limitMillis, SearchContext searchContext,
+                                               SharedTables sharedTables, SearchListener listener) {
+        Objects.requireNonNull(listener);
+
         // Advance the TT generation so entries from the previous search become stale
         if (sharedTables.tt != null) {
             sharedTables.tt.newSearch();
@@ -69,71 +77,71 @@ public class Search {
         long start = System.currentTimeMillis();
 
         // Create a new thread to run the search on
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
 
-        // Initialize search depth and search while time hasn't been exceeded
-        int depth = 0;
-        while (depth < MAX_SEARCH_DEPTH) {
-            depth++;
+            // Initialize search depth and search while time hasn't been exceeded
+            int depth = 0;
+            while (depth < MAX_SEARCH_DEPTH) {
+                depth++;
 
-            // Create and submit search task
-            Callable<MoveValue> task = getSearchCallable(position, depth, searchContext, sharedTables);
-            Future<MoveValue> future = executor.submit(task);
-
-            try {
-                // Compute the max amount of time this search can take
-                long maxTimeForSearch = start + limitMillis - System.currentTimeMillis();
-
-                // Try to get the result of the task. If time limit exceeded, throws timeout exception
-                MoveValue result = future.get(maxTimeForSearch, TimeUnit.MILLISECONDS);
-                searchResults.add(result);
-
-                System.out.println("info depth " + depth + " pv " +
-                        searchContext.pvTable.getPVLine()
-                        + " score cp " + searchResults.getLast().value);
-
-                // If mate found, try to reduce moves until mate by requiring that the same score is found for 3 consecutive depths.
-                if (Math.abs(searchResults.getLast().value) >= (MATED_SCORE) && searchResults.size() >= 3) {
-                    int size = searchResults.size();
-                    int lastValue = searchResults.get(size - 1).value;
-                    int secondValue = searchResults.get(size - 2).value;
-                    int thirdValue = searchResults.get(size - 3).value;
-                    if (lastValue == secondValue && secondValue == thirdValue)
-                        break;
-                }
-
-            } catch (TimeoutException te) {
-                System.out.println("Time limit reached");
-
-                future.cancel(true); // Tells the thread that it was interrupted
-                executor.shutdown();
+                // Create and submit search task
+                Callable<MoveValue> task = getSearchCallable(position, depth, searchContext, sharedTables);
+                Future<MoveValue> future = executor.submit(task);
 
                 try {
-                    if (!executor.awaitTermination(1, TimeUnit.SECONDS)) { // Wait for it to finish
-                        executor.shutdownNow(); // Force shutdown if it didn't finish
+                    // Compute the max amount of time this search can take
+                    long maxTimeForSearch = start + limitMillis - System.currentTimeMillis();
+
+                    // Try to get the result of the task. If time limit exceeded, throws timeout exception
+                    MoveValue result = future.get(maxTimeForSearch, TimeUnit.MILLISECONDS);
+                    searchResults.add(result);
+
+                    // Give the listener the information from this information
+                    listener.onIterationCompleted(new SearchIteration(depth, result.value,
+                            searchContext.pvTable.getPVSnapshot()));
+
+                    // If mate found, try to reduce moves until mate by requiring that the same score is found for 3 consecutive depths.
+                    if (Math.abs(searchResults.getLast().value) >= (MATED_SCORE) && searchResults.size() >= 3) {
+                        int size = searchResults.size();
+                        int lastValue = searchResults.get(size - 1).value;
+                        int secondValue = searchResults.get(size - 2).value;
+                        int thirdValue = searchResults.get(size - 3).value;
+                        if (lastValue == secondValue && secondValue == thirdValue)
+                            break;
                     }
+
+                } catch (TimeoutException te) {
+
+                    future.cancel(true); // Tells the thread that it was interrupted
+                    executor.shutdown();
+
+                    try {
+                        if (!executor.awaitTermination(1, TimeUnit.SECONDS)) { // Wait for it to finish
+                            executor.shutdownNow(); // Force shutdown if it didn't finish
+                        }
+                    } catch (InterruptedException e) {
+                        executor.shutdownNow();
+                        Thread.currentThread().interrupt();
+                    }
+
+                    // reset firstNonMove since search timed out
+                    searchContext.firstNonMove = 0;
+
+                    break; //Exit the search loop
+                } catch (ExecutionException e) { // This should never happen so we throw an exception
+                    throw new RuntimeException("Unexpected execution exception caught", e.getCause());
                 } catch (InterruptedException e) {
-                    executor.shutdownNow();
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Unexpected interrupted exception caught", e);
                 }
-
-                // reset firstNonMove since search timed out
-                searchContext.firstNonMove = 0;
-
-                break; //Exit the search loop
-            } catch (ExecutionException e) { // This should never happen so we throw an exception
-                e.printStackTrace();
-                throw new RuntimeException("Unexpected execution exception caught");
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
-                throw new RuntimeException("Unexpected interrupted exception caught");
             }
-        }
 
-        if (searchResults.size() == 0) {
-            throw new RuntimeException("Search failed because a single depth search didn't finish in time");
-        }
+            if (searchResults.size() == 0) {
+                throw new RuntimeException("Search failed because a single depth search didn't finish in time");
+            }
 
-        return searchResults.get(searchResults.size() - 1);
+            return searchResults.get(searchResults.size() - 1);
+        }
     }
 
     /**
@@ -147,17 +155,8 @@ public class Search {
      */
     public static Callable<MoveValue> getSearchCallable(Position position, int depth, SearchContext searchContext, SharedTables sharedTables) {
         return () -> {
-            try {
-                int score = pvSearch(NEG_INFINITY, POS_INFINITY, depth, position, searchContext, sharedTables, true, 0, true);
-                return new MoveValue(score, searchContext.bestMoves[0]);
-            } catch (InterruptedException e) {
-                System.out.println("Negamax was interrupted.");
-                throw e;
-            } catch (InvalidPositionException ipe) {
-                System.out.println("IPE caught at callable");
-                ipe.printStackTrace();
-                throw ipe;
-            }
+            int score = pvSearch(NEG_INFINITY, POS_INFINITY, depth, position, searchContext, sharedTables, true, 0, true);
+            return new MoveValue(score, searchContext.bestMoves[0]);
         };
     }
 
@@ -182,12 +181,10 @@ public class Search {
             try {
                 getSearchCallable(position, i, searchContext, sharedTables).call();
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new RuntimeException("Unexpected exception from search", e);
             }
         }
 
-        System.out.println(searchContext.pvTable.getPVLine());
     }
 
     /**
@@ -210,7 +207,6 @@ public class Search {
 
         // Check for signal to interrupt the search
         if (Thread.currentThread().isInterrupted()) {
-            System.out.println("interrupted in negamax!");
             throw new InterruptedException("Negamax was interrupted by iterative deepening");
         }
         searchContext.pvTable.setPVLength(ply);

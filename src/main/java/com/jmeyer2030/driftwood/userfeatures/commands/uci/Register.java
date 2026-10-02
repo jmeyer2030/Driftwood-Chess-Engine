@@ -12,6 +12,6 @@ public class Register implements Command {
 
     @Override
     public void execute(String[] arguments) {
-        System.out.print("register later\n");
+        chessEngine.uciOutput.line("register later");
     }
 }

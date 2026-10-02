@@ -24,12 +24,12 @@ public class UCIMode implements Command {
     @Override
     public void execute(String[] arguments) {
         handler.acceptUCICommands();
-        System.out.print(chessEngine.getID());
-        System.out.printf(
-                "option name Hash type spin default %d min %d max %d%n",
+        chessEngine.getID().lines().forEach(chessEngine.uciOutput::line);
+        chessEngine.uciOutput.line(String.format(
+                "option name Hash type spin default %d min %d max %d",
                 chessEngine.hashSizeMb,
                 TranspositionTable.MIN_MB_SIZE,
-                TranspositionTable.MAX_MB_SIZE);
-        System.out.print("uciok\n");
+                TranspositionTable.MAX_MB_SIZE));
+        chessEngine.uciOutput.line("uciok");
     }
 }

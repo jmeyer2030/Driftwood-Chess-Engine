@@ -11,8 +11,6 @@ import com.jmeyer2030.driftwood.search.SearchContext;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,13 +106,6 @@ public class PuzzleBenchmark {
         // Shared move buffer for LAN-to-move conversion (not used during search)
         int[] moveBuffer = new int[256];
 
-        // Suppress engine search info output during benchmark
-        PrintStream realOut = System.out;
-        PrintStream nullOut = new PrintStream(new OutputStream() {
-            @Override public void write(int b) { /* discard */ }
-            @Override public void write(byte[] b, int off, int len) { /* discard */ }
-        });
-
         for (int i = 0; i < actualCount; i++) {
             Puzzle puzzle = sample.get(i);
             int bucketIdx = bucketFor(puzzle.rating);
@@ -130,12 +121,10 @@ public class PuzzleBenchmark {
                 SearchContext searchContext = new SearchContext();
                 SharedTables sharedTables = new SharedTables(ttSize);
 
-                // Run the search with engine stdout suppressed
-                System.setOut(nullOut);
+                // Search is quiet unless a progress listener is supplied.
                 long searchStart = System.currentTimeMillis();
                 Search.MoveValue result = Search.iterativeDeepening(position, timePerPuzzle, searchContext, sharedTables);
                 long searchElapsed = System.currentTimeMillis() - searchStart;
-                System.setOut(realOut);
 
                 // Compare engine's best move with expected
                 String engineMove = MoveEncoding.getLAN(result.bestMove);
@@ -147,7 +136,7 @@ public class PuzzleBenchmark {
                     bucketCorrect[bucketIdx]++;
                 }
 
-                realOut.printf("[%s] #%-4d %-6s (rating %4d)  expected=%-6s got=%-6s  time=%dms%n",
+                System.out.printf("[%s] #%-4d %-6s (rating %4d)  expected=%-6s got=%-6s  time=%dms%n",
                         pass ? "PASS" : "FAIL",
                         i + 1,
                         puzzle.id,
@@ -157,10 +146,8 @@ public class PuzzleBenchmark {
                         searchElapsed);
 
             } catch (Exception e) {
-                // Restore stdout in case it was suppressed when the exception occurred
-                System.setOut(realOut);
                 totalErrors++;
-                realOut.printf("[ERR ] #%-4d %-6s (rating %4d)  %s: %s%n",
+                System.out.printf("[ERR ] #%-4d %-6s (rating %4d)  %s: %s%n",
                         i + 1,
                         puzzle.id,
                         puzzle.rating,

@@ -18,18 +18,14 @@ public class Perft {
         int[] moveBuffer = new int[2048];
         int firstNonMove =  MoveGenerator.generateAllMoves(position, moveBuffer, 0);
 
-        System.out.println("Perft begin: Depth: " + depth);
-
         long total = 0;
         for (int i = 0; i < firstNonMove; i++) {
             position.makeMove(moveBuffer[i]);
             long thisMove = perftRecursion(depth - 1, position, moveBuffer, firstNonMove);
-            // System.out.println(MoveEncoding.getLAN(moveBuffer[i]) + ": " + thisMove);
             position.unMakeMove(moveBuffer[i]);
 
             total += thisMove;
         }
-        // System.out.println("Total: " + total);
         return total;
     }
 

@@ -1,6 +1,5 @@
 package com.jmeyer2030.driftwood.userfeatures.commands.uci;
 
-import com.jmeyer2030.driftwood.board.MoveEncoding;
 import com.jmeyer2030.driftwood.search.Ponder;
 import com.jmeyer2030.driftwood.search.Search;
 import com.jmeyer2030.driftwood.search.TimeManagement;
@@ -121,10 +120,9 @@ public class Go implements Command {
         long time = Long.parseLong(activeTimeStr);
         long computeTime = TimeManagement.millisForMove(time, 0);
 
-        System.out.println("Beginning search:");
-        Search.MoveValue moveValue = Search.iterativeDeepening(position, computeTime, chessEngine.searchContext, chessEngine.sharedTables);
+        Search.MoveValue moveValue = Search.iterativeDeepening(position, computeTime, chessEngine.searchContext, chessEngine.sharedTables, chessEngine.uciOutput);
 
-        System.out.println("bestmove " + MoveEncoding.getLAN(moveValue.bestMove) + " ponder " + MoveEncoding.getLAN(chessEngine.searchContext.pvTable.getBestResponse()));
+        chessEngine.uciOutput.bestMove(moveValue.bestMove, chessEngine.searchContext.pvTable.getBestResponse());
     }
 
     public void executePonder() {

@@ -3,6 +3,9 @@ package com.jmeyer2030.driftwood.search;
 import com.jmeyer2030.driftwood.board.MoveEncoding;
 import com.jmeyer2030.driftwood.config.GlobalConstants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.jmeyer2030.driftwood.search.Search.MAX_SEARCH_DEPTH;
 
 /**
@@ -78,6 +81,15 @@ public class TriangularPVTable {
      */
     public int getBestResponse() {
         return triangularPV[0][1];
+    }
+
+    /** Returns a detached, immutable root PV for a completed iteration. */
+    public List<Integer> getPVSnapshot() {
+        List<Integer> moves = new ArrayList<>(pvLength[0]);
+        for (int i = 0; i < pvLength[0]; i++) {
+            moves.add(triangularPV[0][i]);
+        }
+        return List.copyOf(moves);
     }
 
     /**

@@ -21,6 +21,6 @@ public class IsReady implements Command {
                 return;
             }
         }
-        System.out.println("readyok");
+        chessEngine.uciOutput.line("readyok");
     }
 }

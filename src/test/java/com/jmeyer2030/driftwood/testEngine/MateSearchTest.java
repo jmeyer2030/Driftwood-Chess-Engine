@@ -1,11 +1,11 @@
 package com.jmeyer2030.driftwood.testEngine;
 
 import com.jmeyer2030.driftwood.board.FEN;
-import com.jmeyer2030.driftwood.board.MoveEncoding;
 import com.jmeyer2030.driftwood.board.Position;
 import com.jmeyer2030.driftwood.board.SharedTables;
 import com.jmeyer2030.driftwood.search.Search;
 import com.jmeyer2030.driftwood.search.SearchContext;
+import com.jmeyer2030.driftwood.userfeatures.UciOutput;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,8 +30,6 @@ public class MateSearchTest {
 
         int score = Search.iterativeDeepening(position, 10000, searchContext, sharedTables).value;
 
-        System.out.println(score);
-
         assertEquals(1_899_999, score);
     }
 
@@ -46,8 +44,6 @@ public class MateSearchTest {
         Position position = new Position(fen);
 
         int score = Search.iterativeDeepening(position, 10000, searchContext, sharedTables).value;
-
-        System.out.println(score);
 
         assertEquals(1_899_997, score);
     }
@@ -64,9 +60,6 @@ public class MateSearchTest {
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 10000, searchContext, sharedTables);
 
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
-
         assertEquals(1_899_995, mv.value);
     }
 
@@ -82,9 +75,6 @@ public class MateSearchTest {
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 10000, searchContext, sharedTables);
 
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
-
         assertEquals(1_899_993, mv.value);
     }
 
@@ -99,9 +89,6 @@ public class MateSearchTest {
         Position position = new Position(fen);
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 1_000_000, searchContext, sharedTables);
-
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
 
         assertEquals(1_899_991, mv.value);
     }
@@ -119,9 +106,6 @@ public class MateSearchTest {
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 1_000_000, searchContext, sharedTables);
 
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
-
         assertEquals(1_899_987, mv.value);
     }
 
@@ -136,9 +120,6 @@ public class MateSearchTest {
         Position position = new Position(fen);
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 1_000_000, searchContext, sharedTables);
-
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
 
         assertEquals(1_899_977, mv.value);
     }
@@ -156,9 +137,6 @@ public class MateSearchTest {
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 1_000_000, searchContext, sharedTables);
 
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
-
         assertEquals(1_899_985, mv.value);
     }
 
@@ -174,9 +152,6 @@ public class MateSearchTest {
         Position position = new Position(fen);
 
         Search.MoveValue mv = Search.iterativeDeepening(position, 1_000_000, searchContext, sharedTables);
-
-        System.out.println(mv.value);
-        System.out.println(MoveEncoding.getLAN(mv.bestMove));
 
         assertEquals(1_899_981, mv.value);
     }
