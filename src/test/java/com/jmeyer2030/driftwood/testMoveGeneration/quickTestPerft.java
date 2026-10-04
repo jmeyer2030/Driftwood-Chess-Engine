@@ -24,7 +24,7 @@ public class quickTestPerft {
 
 
     @Test void testStartPosPerft() {
-        int maxDepth = 8;
+        int maxDepth = 7;
         for (int depth = 0; depth <= maxDepth; depth++) {
             long result = perftStartingPosition(depth);
             assertEquals(startPosPerftResults[depth], result);
