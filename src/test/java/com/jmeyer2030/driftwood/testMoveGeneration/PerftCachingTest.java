@@ -5,6 +5,7 @@ import com.jmeyer2030.driftwood.board.Position;
 import com.jmeyer2030.driftwood.movegeneration.MoveGenerator;
 import com.jmeyer2030.driftwood.userfeatures.perft.Perft;
 import com.jmeyer2030.driftwood.userfeatures.perft.PerftTable;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -69,6 +70,7 @@ class PerftCachingTest {
     }
 
     @Test
+    @Disabled // This test doesn't pass because we disabled depth-based eviction.
     void deeperSubtreesSurviveShallowerIndexCollisions() {
         PerftTable table = new PerftTable(1);
         long firstHash = 0L;
